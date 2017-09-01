@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ $1 = "work" ]; then
+	echo -n "Changing default browser to Chrome... "
+	xdg-settings set default-web-browser google-chrome-unstable.desktop
+	echo "done."
+	echo -n "Mounting laptop... "
+	sshfs laptop:/home/cyborg/Code/questionnaire ~/Code/questionnaire.ssh
+	echo "done."
+elif [ $1 = "normal" ]; then
+	echo -n "Changing default browser to Firefox... "
+	xdg-settings set default-web-browser firefox.desktop
+	echo "done."
+	echo -n "Unmounting laptop... "
+	OUTPUT="$(fusermount -u ~/Code/questionnaire.ssh 2>&1)"
+	if [ $? -ne 0 ]; then
+		echo "failed."
+		echo
+		echo "${OUTPUT}"
+		exit 1
+	fi
+	echo "done."
+else
+	echo 'Invalid mode, please use "work" or "normal"'
+	exit 1
+fi
